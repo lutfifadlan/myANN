@@ -62,6 +62,31 @@ public class Node {
         return listinput;
     }
     
+    private int getMaxnode() //nomor node paling besar
+    private int getCurrentnode() //nomer node saat ini
+   // private double weight;
+    private final double getWeightInitialization;
+    private double[] listWeight;
+    private double[] listWeightupdated;
+    private List<Double> allWeight;
+    private double deltaWeight;
+    private double[] listDeltaWeight;
+    private List<Double> allDeltaWeight;
+    private double learningRate;
+    private double target;
+    private double[] listTarget;
+    private double output;
+    private double[] listOutput;
+    private List<Double> allOutput;
+    private List<Double> allNetFunction;
+    private Random random;
+    private boolean isConvergen;
+    private final double treshold;
+    private int nepoch;
+    private double errorValue;
+    private List<Double> allErrorValue; 
+    
+    
     
     public void inputWeight(double[] _listWeight, int _ninput){
         listWeight = _listWeight;

@@ -19,7 +19,7 @@ public class ANN {
         // TODO code application logic here
         int ninput = 4;
         Node Perceptron = new Node(ninput);
-   
+        
      
                      
      //   Perceptron.PerceptronLearning(w,ninput);
