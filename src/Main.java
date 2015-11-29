@@ -41,5 +41,7 @@ public class Main {
         mlp = new MultiLayerPerceptron(dataSet);
         mlp.buildClassifier(dataSet);
         WekaUtil.saveModel(filename, mlp);
+        //WekaUtil.percentageSplit(dataSet, mlp, 50);
+        //WekaUtil.crossValidation(dataSet, mlp);
     }
 }

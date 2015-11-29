@@ -153,7 +153,7 @@ public class WekaUtil{
         }
         return null;
     }
-    public void testClassifier(Instances dataSet, Instances dataTest, Classifier classifier){
+    public static void testClassifier(Instances dataSet, Instances dataTest, Classifier classifier){
         if(dataSet!=null){
             try {
                 // evaluate classifier and print some statistics
@@ -169,7 +169,7 @@ public class WekaUtil{
             System.out.println("Data is null");
         }
     }
-    public void crossValidation(Instances dataSet, Classifier c){
+    public static void crossValidation(Instances dataSet, Classifier c){
         if(dataSet!=null){
             try {
                 // evaluate classifier and print some statistics
@@ -185,7 +185,7 @@ public class WekaUtil{
             System.out.println("Data is null");
         }
     }
-    public void percentageSplit(Instances dataSet, Classifier classifier, int percent){
+    public static void percentageSplit(Instances dataSet, Classifier classifier, double percent){
             // Percent split
             int trainSize = (int) Math.round(dataSet.numInstances() * percent / 100);
             int testSize = dataSet.numInstances() - trainSize;
@@ -212,14 +212,14 @@ public class WekaUtil{
             Logger.getLogger(WekaUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public Classifier loadModel(String filename) throws Exception{
+    public static Classifier loadModel(String filename) throws Exception{
         SerializedClassifier classifier = new SerializedClassifier();
         classifier.setModelFile(new File(pathModel+filename+".model"));
         System.out.println("Model has been loaded");
         return classifier;
     }
     
-    public void classify(String filename, Classifier classifier) throws Exception{
+    public static void classify(String filename, Classifier classifier) throws Exception{
         // load unlabeled data and set class attribute
         Instances unlabeled = loadDataARFF(filename);
         unlabeled.setClassIndex(unlabeled.numAttributes() - 1);
