@@ -17,7 +17,9 @@ import weka.core.Utils;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
+import weka.filters.supervised.attribute.NominalToBinary;
 import weka.filters.supervised.instance.Resample;
+import weka.filters.unsupervised.attribute.Normalize;
 import weka.filters.unsupervised.attribute.Remove;
 
 /**
@@ -102,6 +104,37 @@ public class WekaUtil {
             sampler.setInputFormat(oldData);
             Instances newData = Resample.useFilter(oldData,sampler);
             return newData;
+        } catch (Exception ex) {
+            Logger.getLogger(WekaUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public static Instances nominalToBinaryFilter(Instances oldDataSet) {
+            NominalToBinary nominalToBinary = new NominalToBinary();
+            Instances newDataSet;
+        try {
+            nominalToBinary.setInputFormat(oldDataSet);
+            newDataSet = new Instances(Filter.useFilter(oldDataSet, nominalToBinary));
+            return newDataSet;
+        } catch (Exception ex) {
+            Logger.getLogger(WekaUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * filter the numeric attribute on be normalized
+     * @param instances the instances
+     * @return new instances
+     */
+    public static Instances normalizationFilter(Instances oldDataSet) {
+        Normalize normalize = new Normalize();
+        Instances newDataSet;
+        try {
+            normalize.setInputFormat(oldDataSet);
+            newDataSet = new Instances(Filter.useFilter(oldDataSet, normalize));
+            return newDataSet;
         } catch (Exception ex) {
             Logger.getLogger(WekaUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
