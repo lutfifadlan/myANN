@@ -34,22 +34,22 @@ public class ANN {
         int target = -1;
         Perceptron Perceptron = new Perceptron(ninput,ninstance);
         double[] listWeight = new double[ninput];
-        double[] listInput = new double[ninput];
+        double[] instance = new double[ninput];
         double[] listTarget = new double[ninstance];
-        listInput[0] = 1;
-        listInput[1] = 1;
-        listInput[2] = 0;
-        listInput[3] = 1;
+        instance[0] = 1;
+        instance[1] = 1;
+        instance[2] = 0;
+        instance[3] = 1;
         listTarget[0] = -1;
    //     listTarget[1] = 1;
      //   listTarget[2] = 1;
         for (int i=0; i<ninput;i++){
             listWeight[i] = 0;
         }
-        Perceptron.setInstance(listInput);
+        Perceptron.setInstance(instance);
         Perceptron.setListWeight(listWeight);
         Perceptron.setListTarget(listTarget);
-        Perceptron.PerceptronLearning(listInput,listWeight);
+        Perceptron.PerceptronLearning(instance,listWeight);
         Perceptron.printPerEpoch();
         Perceptron.EpochStatus(currentEpoch);
         if(!Perceptron.getIsConvergen())
@@ -57,6 +57,6 @@ public class ANN {
             for(int i=0; i<ninput; i++)
                 System.out.println("allWeightUpdated[" + i + "]" + " = " + Perceptron.getAllWeightUpdated().get(i));
         }
-            //Perceptron.PerceptronLearning(listInput,listWeight);
+            //Perceptron.PerceptronLearning(instance,listWeight);
     }
 }
