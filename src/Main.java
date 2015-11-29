@@ -2,7 +2,6 @@
 import ann.ANNOptions;
 import ann.MultiLayerPerceptron;
 import ann.WekaUtil;
-import javax.rmi.CORBA.Util;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
@@ -21,18 +20,18 @@ public class Main {
         //set Topology
         ANNOptions.bias = 1;
         ANNOptions.biasWeight = 0.1;
-        ANNOptions.initWeight = 0.1;
+        ANNOptions.initWeight = 0.05;
         ANNOptions.isRandomWeight = false;
         ANNOptions.learningRate = 0.1;
         ANNOptions.momentum = 0.1;
-        ANNOptions.maxEpoch = 100;
+        ANNOptions.maxEpoch = 1000;
         ANNOptions.numHiddenNeuron = 2;
-        ANNOptions.threshold = 0.34;
+        //ANNOptions.threshold = 0.34;
         
         Classifier mlp;
         Instances dataSet; 
-        String filename = "weather.test.arff";
-        
+        String filename = "iris.arff";
+        String filenameUnlabeled = "weather.unlabeled.nominal.arff";
         dataSet= WekaUtil.loadDataARFF(filename);
         dataSet = WekaUtil.nominalToBinaryFilter(dataSet);
         dataSet = WekaUtil.normalizationFilter(dataSet);
@@ -42,6 +41,7 @@ public class Main {
         mlp.buildClassifier(dataSet);
         WekaUtil.saveModel(filename, mlp);
         //WekaUtil.percentageSplit(dataSet, mlp, 50);
-        //WekaUtil.crossValidation(dataSet, mlp);
+        WekaUtil.crossValidation(dataSet, mlp);
+        //WekaUtil.classify(filenameUnlabeled, mlp);
     }
 }

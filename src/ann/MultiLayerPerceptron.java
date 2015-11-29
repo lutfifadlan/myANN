@@ -134,14 +134,11 @@ public class MultiLayerPerceptron extends Classifier{
                 }
                 addError(i, neurons.get(maxOutputNeuron).target.get(i) - neurons.get(maxOutputNeuron).input.get(i));
             }
-
             if (Double.compare(calculateMSE(), threshold) < 0) {
                 underThreshold = true;
             }
+            epoch++;
         }while((epoch < numEpoch)&&(!underThreshold));
-        
-        //printNeuron();
-        //printWeight();
     }
     
     @Override
@@ -209,8 +206,8 @@ public class MultiLayerPerceptron extends Classifier{
     private void initInputNeurons(){
         Map<Integer, SortedMap<Integer,Double>> attrDataSet = initDataSet();
         
-        for(int i=1; i<=dataSet.numAttributes(); i++){
-            neurons.put(i, new Neuron(attrDataSet.get(i-1), 0));
+        for(int i=0; i<dataSet.numAttributes(); i++){
+            neurons.put(i, new Neuron(attrDataSet.get(i), 0));
             //System.out.println(attrDataSet.get(i));
         }
         //System.out.println(neurons.toString());
@@ -278,8 +275,8 @@ public class MultiLayerPerceptron extends Classifier{
         Map<Integer, Double[]> temp;
         
         // input neuron to hidden neuron
-        for (int i=1; i<=numInputNeuron; i++) {
-            for (int j=numInputNeuron+1; j<=(numInputNeuron+numHiddenNeuron); j++) {
+        for (int i=1; i<numInputNeuron; i++) {
+            for (int j=numInputNeuron; j<(numInputNeuron+numHiddenNeuron); j++) {
                 if(weights.containsKey(j)){
                     temp = weights.get(j);
                 }else{
@@ -292,8 +289,8 @@ public class MultiLayerPerceptron extends Classifier{
         //System.out.println("Input ke hidden");
         //System.out.println(weights.toString());
         // hidden to output
-        for (int i=numInputNeuron+1; i<=(numInputNeuron+numHiddenNeuron); i++) {
-            for (int j=(numInputNeuron+numHiddenNeuron)+1; j<=(numInputNeuron+numHiddenNeuron+numOutputNeuron); j++) {
+        for (int i=numInputNeuron; i<(numInputNeuron+numHiddenNeuron); i++) {
+            for (int j=(numInputNeuron+numHiddenNeuron); j<(numInputNeuron+numHiddenNeuron+numOutputNeuron); j++) {
                 if (weights.containsKey(j)) {
                     temp = weights.get(j);
                 } else {
@@ -442,7 +439,7 @@ public class MultiLayerPerceptron extends Classifier{
         }
     }
     
-    /*public void printNeuron() {
+    public void printNeuron() {
         System.out.println("Neuron - Input Value (Activation) - Target - Net Value - Error");
         for (Map.Entry<Integer, Neuron> neuron : neurons.entrySet()) {
             System.out.print(neuron.getKey() + " ");
@@ -464,7 +461,7 @@ public class MultiLayerPerceptron extends Classifier{
                 System.out.println(realWeight.getValue()[2] + " ");
             }
         }
-    }*/
+    }
     
     public double sigmoid(double value){
         double exp = 1 + Math.exp(-value);

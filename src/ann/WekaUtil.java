@@ -33,7 +33,7 @@ public class WekaUtil{
     
     public static Instances loadDataARFF(String filename){
         try {
-            System.out.println(pathDataSet + filename);
+            //System.out.println(pathDataSet + filename);
             ConverterUtils.DataSource source = new ConverterUtils.DataSource(pathDataSet + filename);
             Instances dataSet;
             dataSet = source.getDataSet();
@@ -170,6 +170,7 @@ public class WekaUtil{
         }
     }
     public static void crossValidation(Instances dataSet, Classifier c){
+        System.out.println("=========10-Fold Cross Validation=========");
         if(dataSet!=null){
             try {
                 // evaluate classifier and print some statistics
@@ -186,12 +187,13 @@ public class WekaUtil{
         }
     }
     public static void percentageSplit(Instances dataSet, Classifier classifier, double percent){
-            // Percent split
-            int trainSize = (int) Math.round(dataSet.numInstances() * percent / 100);
-            int testSize = dataSet.numInstances() - trainSize;
-            Instances trainSet = new Instances(dataSet, 0, trainSize);
-            Instances testSet = new Instances(dataSet, trainSize, testSize);
-            // train classifier
+        System.out.println("=========Percentage Split=========");
+        // Percent split
+        int trainSize = (int) Math.round(dataSet.numInstances() * percent / 100);
+        int testSize = dataSet.numInstances() - trainSize;
+        Instances trainSet = new Instances(dataSet, 0, trainSize);
+        Instances testSet = new Instances(dataSet, trainSize, testSize);
+        // train classifier
         try {
             classifier.buildClassifier(trainSet);
             // evaluate classifier and print some statistics
