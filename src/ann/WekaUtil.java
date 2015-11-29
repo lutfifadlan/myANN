@@ -11,8 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.misc.SerializedClassifier;
+import weka.core.Debug;
 import weka.core.Instances;
-import weka.core.SerializationHelper;
 import weka.core.Utils;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils;
@@ -26,12 +27,13 @@ import weka.filters.unsupervised.attribute.Remove;
  *
  * @author Fahmi
  */
-public class WekaUtil {
+public class WekaUtil{
     private static final String pathDataSet = "dataSet/";
     private static final String pathModel = "model/";
     
     public static Instances loadDataARFF(String filename){
         try {
+            System.out.println(pathDataSet + filename);
             ConverterUtils.DataSource source = new ConverterUtils.DataSource(pathDataSet + filename);
             Instances dataSet;
             dataSet = source.getDataSet();
@@ -204,16 +206,17 @@ public class WekaUtil {
     }
     public static void saveModel(String filename, Classifier c){
         try {
-            SerializationHelper.write(pathModel+filename, c);
+            Debug.saveToFile(pathModel+filename+".model", c);
             System.out.println("Model has been saved");
         } catch (Exception ex) {
             Logger.getLogger(WekaUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     public Classifier loadModel(String filename) throws Exception{
-        Classifier c = (Classifier) SerializationHelper.read(pathModel+filename);
+        SerializedClassifier classifier = new SerializedClassifier();
+        classifier.setModelFile(new File(pathModel+filename+".model"));
         System.out.println("Model has been loaded");
-        return c;
+        return classifier;
     }
     
     public void classify(String filename, Classifier classifier) throws Exception{

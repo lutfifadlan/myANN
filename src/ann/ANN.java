@@ -15,7 +15,7 @@ public class ANN {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         // TODO code application logic here
         int ninput = 4;
         int ninstance = 3;
@@ -39,5 +39,5 @@ public class ANN {
         Perceptron.setListTarget(listTarget);
         Perceptron.PerceptronLearning(listWeight);
         Perceptron.printPerEpoch();
-    }
+    }*/
 }

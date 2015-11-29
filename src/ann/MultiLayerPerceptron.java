@@ -15,7 +15,6 @@ import weka.classifiers.Classifier;
 import weka.core.Capabilities;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.filters.Filter;
 
 /**
  *
@@ -44,15 +43,14 @@ public class MultiLayerPerceptron extends Classifier{
     public MultiLayerPerceptron(Instances instances){
         dataSet = instances;
         
-        bias = ANNOptions.bias;
-        biasWeight = ANNOptions.biasWeight;
-        
         if (ANNOptions.isRandomWeight) {
+            System.out.println("random Weight");
             double rangeMin = -0.05;
             double rangeMax = 0.05;
             Random r = new Random();
             initWeight = rangeMin + (rangeMax - rangeMin) * r.nextDouble();
         }else{
+            System.out.println("given Weight");
             initWeight = ANNOptions.initWeight;
         }
         
@@ -66,6 +64,12 @@ public class MultiLayerPerceptron extends Classifier{
         neurons = new HashMap<>();
         weights = new HashMap<>();
         neuronType = new HashMap<>();
+        
+        bias = ANNOptions.bias;
+        initBiasValue();
+        biasWeight = ANNOptions.biasWeight;
+        initInputNeurons();
+        initHiddenNeuron(numHiddenNeuron);
     }
     
     @Override
@@ -75,14 +79,7 @@ public class MultiLayerPerceptron extends Classifier{
         //instances = new Instances(instances);
         instances.deleteWithMissingClass();
         dataSet = new Instances(instances);
-        //filterNominal
-        /*nomToBinFilter.setInputFormat(dataSet);
-        dataSet = Filter.useFilter(instances, nomToBinFilter);
-        normalizeFilter.setInputFormat(dataSet);
-        dataSet = Filter.useFilter(instances, normalizeFilter);
-        */
-        initInputNeurons();
-        initHiddenNeuron(numHiddenNeuron);
+        
         initOutputNeuron(dataSet.numClasses());
         //setNumNeuron(instances.numClasses(), false); //output
         setNeuronConnectivity();
@@ -187,7 +184,7 @@ public class MultiLayerPerceptron extends Classifier{
         
     }
     
-    public void initBiasValue(){
+    private void initBiasValue(){
         SortedMap<Integer,Double> tempBias = new TreeMap<>();
         for (int i=0; i< dataSet.numInstances(); i++){
             tempBias.put(i, bias);
@@ -199,7 +196,9 @@ public class MultiLayerPerceptron extends Classifier{
         
         for(int i=0; i<dataSet.numAttributes(); i++){
             neurons.put(i, new Neuron(attrDataSet.get(i), 0));
+            System.out.println(attrDataSet.get(i));
         }
+        System.out.println(neurons.toString());
     }
 
     private Map<Integer, SortedMap<Integer, Double>> initDataSet() {
@@ -210,8 +209,7 @@ public class MultiLayerPerceptron extends Classifier{
             for (int j=0; j<dataSet.numInstances(); j++) {
                 attrData.put(j, dataSet.instance(j).value(i));
             }
-            //why i+1?
-            tempDataSet.put(i + 1, attrData);
+            tempDataSet.put(i, attrData);
         }
         return tempDataSet;
     }
@@ -310,7 +308,6 @@ public class MultiLayerPerceptron extends Classifier{
                 weights.put(j, temp);
             }
         }
-
         initClassMap();
     }
     
@@ -494,6 +491,8 @@ public class MultiLayerPerceptron extends Classifier{
             }
         }
     }
+    
+    @Override
     public Capabilities getCapabilities() {
         Capabilities result = super.getCapabilities();
         result.disableAll();
@@ -504,7 +503,6 @@ public class MultiLayerPerceptron extends Classifier{
         result.enable(Capabilities.Capability.MISSING_CLASS_VALUES);
         return result;
     }
-    
     
     //check sigmoid bener/ngga
     public double sigmoid(double value){
