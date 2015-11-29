@@ -5,6 +5,7 @@
  */
 package ann;
 
+import java.io.Serializable;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -12,7 +13,9 @@ import java.util.TreeMap;
  *
  * @author Fahmi
  */
-public class Neuron {
+public class Neuron implements Serializable{
+    private static final long serialVersionUID = 0;
+    
     public SortedMap<Integer,Double> input;
     public double output;
     public double error;

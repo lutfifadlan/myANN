@@ -11,25 +11,29 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.misc.SerializedClassifier;
+import weka.core.Debug;
 import weka.core.Instances;
-import weka.core.SerializationHelper;
 import weka.core.Utils;
 import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
+import weka.filters.supervised.attribute.NominalToBinary;
 import weka.filters.supervised.instance.Resample;
+import weka.filters.unsupervised.attribute.Normalize;
 import weka.filters.unsupervised.attribute.Remove;
 
 /**
  *
  * @author Fahmi
  */
-public class WekaUtil {
+public class WekaUtil{
     private static final String pathDataSet = "dataSet/";
     private static final String pathModel = "model/";
     
     public static Instances loadDataARFF(String filename){
         try {
+            //System.out.println(pathDataSet + filename);
             ConverterUtils.DataSource source = new ConverterUtils.DataSource(pathDataSet + filename);
             Instances dataSet;
             dataSet = source.getDataSet();
@@ -108,6 +112,37 @@ public class WekaUtil {
         return null;
     }
     
+    public static Instances nominalToBinaryFilter(Instances oldDataSet) {
+            NominalToBinary nominalToBinary = new NominalToBinary();
+            Instances newDataSet;
+        try {
+            nominalToBinary.setInputFormat(oldDataSet);
+            newDataSet = new Instances(Filter.useFilter(oldDataSet, nominalToBinary));
+            return newDataSet;
+        } catch (Exception ex) {
+            Logger.getLogger(WekaUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    /**
+     * filter the numeric attribute on be normalized
+     * @param instances the instances
+     * @return new instances
+     */
+    public static Instances normalizationFilter(Instances oldDataSet) {
+        Normalize normalize = new Normalize();
+        Instances newDataSet;
+        try {
+            normalize.setInputFormat(oldDataSet);
+            newDataSet = new Instances(Filter.useFilter(oldDataSet, normalize));
+            return newDataSet;
+        } catch (Exception ex) {
+            Logger.getLogger(WekaUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
     public static Classifier buildClassifier(Instances dataSet, Classifier c)
     {
         try {
@@ -118,7 +153,7 @@ public class WekaUtil {
         }
         return null;
     }
-    public void testClassifier(Instances dataSet, Instances dataTest, Classifier classifier){
+    public static void testClassifier(Instances dataSet, Instances dataTest, Classifier classifier){
         if(dataSet!=null){
             try {
                 // evaluate classifier and print some statistics
@@ -134,7 +169,8 @@ public class WekaUtil {
             System.out.println("Data is null");
         }
     }
-    public void crossValidation(Instances dataSet, Classifier c){
+    public static void crossValidation(Instances dataSet, Classifier c){
+        System.out.println("=========10-Fold Cross Validation=========");
         if(dataSet!=null){
             try {
                 // evaluate classifier and print some statistics
@@ -150,13 +186,14 @@ public class WekaUtil {
             System.out.println("Data is null");
         }
     }
-    public void percentageSplit(Instances dataSet, Classifier classifier, int percent){
-            // Percent split
-            int trainSize = (int) Math.round(dataSet.numInstances() * percent / 100);
-            int testSize = dataSet.numInstances() - trainSize;
-            Instances trainSet = new Instances(dataSet, 0, trainSize);
-            Instances testSet = new Instances(dataSet, trainSize, testSize);
-            // train classifier
+    public static void percentageSplit(Instances dataSet, Classifier classifier, double percent){
+        System.out.println("=========Percentage Split=========");
+        // Percent split
+        int trainSize = (int) Math.round(dataSet.numInstances() * percent / 100);
+        int testSize = dataSet.numInstances() - trainSize;
+        Instances trainSet = new Instances(dataSet, 0, trainSize);
+        Instances testSet = new Instances(dataSet, trainSize, testSize);
+        // train classifier
         try {
             classifier.buildClassifier(trainSet);
             // evaluate classifier and print some statistics
@@ -171,19 +208,20 @@ public class WekaUtil {
     }
     public static void saveModel(String filename, Classifier c){
         try {
-            SerializationHelper.write(pathModel+filename, c);
+            Debug.saveToFile(pathModel+filename+".model", c);
             System.out.println("Model has been saved");
         } catch (Exception ex) {
             Logger.getLogger(WekaUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    public Classifier loadModel(String filename) throws Exception{
-        Classifier c = (Classifier) SerializationHelper.read(pathModel+filename);
+    public static Classifier loadModel(String filename) throws Exception{
+        SerializedClassifier classifier = new SerializedClassifier();
+        classifier.setModelFile(new File(pathModel+filename+".model"));
         System.out.println("Model has been loaded");
-        return c;
+        return classifier;
     }
     
-    public void classify(String filename, Classifier classifier) throws Exception{
+    public static void classify(String filename, Classifier classifier) throws Exception{
         // load unlabeled data and set class attribute
         Instances unlabeled = loadDataARFF(filename);
         unlabeled.setClassIndex(unlabeled.numAttributes() - 1);
