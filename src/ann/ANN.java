@@ -13,21 +13,57 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 /**
  *
  * @author Mochamad Lutfi F
  */
 public class ANN {
-    /**
-     * @param args the command line arguments
-     * @throws java.io.FileNotFoundException
-     */
-    public static void main(String[] args) throws FileNotFoundException, IOException, Exception {
+    //CSV file header
+  /*  private static final String [] FILE_HEADER_MAPPING = {"x0","x1","x2","x3","Target"};
+    //dataset attribute
+    private static final String x0 = "x0";
+    private static final String x1 = "x1";
+    private static final String x2 = "x2";
+    private static final String x3 = "x3"; 
+    private static final String Target = "Target"; */
+    
+    public static void main(String[] args) throws IOException {
+        Perceptron unit = new Perceptron();
+        //unit.readARFF("C:\\Program Files\\Weka-3-6\\data\\weather.numeric.arff");
+        //unit.readARFF("C:\\Program Files\\Weka-3-6\\data\\weather.numeric.arff");
+        System.out.println("oy");
+//        unit.PerceptronLearning(unit.getData());
+        unit.buildClassifier(unit.getData());
+    }
         // TODO code application logic here
-        DataSource source = new DataSource("D:/ITB/Semester 7/Machine Learning/Tugas Besar ANN/dataset.arff");
-        Instances data = source.getDataSet();
-        // setting class attribute
-        //data.setClassIndex(classIndex);
+      /*  Perceptron unit = null;
+        int currentEpoch = 0;
+        FileReader fileReader = null;
+        CSVParser csvFileParser = null;
+        //Create the CSVFormat object with the header mapping
+        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
+        //Create a new list of student to be filled by CSV file data 
+        List units = new ArrayList();
+        //initialize FileReader object
+        fileReader = new FileReader("D:/ITB/Semester 7/Machine Learning/dataset1.csv");
+        //initialize CSVParser object
+        csvFileParser = new CSVParser(fileReader, csvFileFormat);
+        //Get a list of CSV file records
+        List csvRecords = csvFileParser.getRecords();
+        //Read the CSV file records starting from the second record to skip the header
+        List<Double> instance = new ArrayList();
+        List<Double> target = new ArrayList();
+        for (int i = 1; i < csvRecords.size(); i++) {
+            CSVRecord record = (CSVRecord) csvRecords.get(i);
+            //Create a new object and fill his data
+           // unit = new Perceptron(Double.parseDouble(record.get(x0)), Double.parseDouble(record.get(x1)), Double.parseDouble(record.get(x2)), Double.parseDouble(record.get(x3)), Double.parseDouble(record.get(Target)));
+            instance.add(Double.NaN)
+            units.add(unit);  
+        }*/
+        /*
         int currentEpoch = 0;
         int ninput = 4;
         int ninstance = 1;
@@ -41,22 +77,23 @@ public class ANN {
         instance[2] = 0;
         instance[3] = 1;
         listTarget[0] = -1;
-   //     listTarget[1] = 1;
-     //   listTarget[2] = 1;
+        listTarget[1] = 1;
+        listTarget[2] = 1;
         for (int i=0; i<ninput;i++){
             listWeight[i] = 0;
         }
         Perceptron.setInstance(instance);
         Perceptron.setListWeight(listWeight);
-        Perceptron.setListTarget(listTarget);
-        Perceptron.PerceptronLearning(instance,listWeight);
-        Perceptron.printPerEpoch();
-        Perceptron.EpochStatus(currentEpoch);
-        if(!Perceptron.getIsConvergen())
+        Perceptron.setListTarget(listTarget);*/
+        /*Perceptron unitNode;
+        unitNode = new Perceptron(4,3);
+        unitNode.setAllInstance(units.get);
+        unitNode.printPerEpoch();
+        unitNode.EpochStatus(currentEpoch);
+        if(!unitNode.getIsConvergen())
         {
-            for(int i=0; i<ninput; i++)
-                System.out.println("allWeightUpdated[" + i + "]" + " = " + Perceptron.getAllWeightUpdated().get(i));
+            for(int i=0; i<unit.getNinput(); i++)
+                System.out.println("allWeightUpdated[" + i + "]" + " = " + unit.getAllWeightUpdated().get(i));
         }
-            //Perceptron.PerceptronLearning(instance,listWeight);
-    }
+    }*/
 }
