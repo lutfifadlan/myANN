@@ -8,7 +8,6 @@ package ann;
 
 import java.util.*;
 
-
 /**
  *
  * @author Mochamad Lutfi F
@@ -22,17 +21,16 @@ public class Perceptron {
     private int maxNode; //nomor node paling besar
     private int currentNode; //nomer node saat ini 
     private double[] listWeight;
-    private double[] listWeightUpdated;
+    //private double[] listWeightUpdated;
+    private List<Double> allWeightUpdated;
     private List<Double> allWeight;
     private double deltaWeight;
     private double[] listDeltaWeight;
     private List<Double> allDeltaWeight;
-    private double learningRate;
     private double target;
     private double[] listTarget;
     private double output;
     private double[] listOutput;
-    private double netFunction;
     private List<Double> allOutput;
     private List<Double> allNetFunction;
     private Random random;
@@ -41,9 +39,9 @@ public class Perceptron {
     private double[] errorPerInstance; //target-output
     private double errorValue;
     private List<Double> allErrorValue; 
-    public final double weightInitialization;
-    public final double treshold;
-    
+    public final double weightInitialization = 0;
+    public final double treshold = 0.01;
+    public final double learningRate = 0.1;
     // CONSTRUCTOR
     public Perceptron(int _ninput, int _ninstance){
         ninstance = _ninstance;
@@ -56,14 +54,13 @@ public class Perceptron {
         allInstance = new ArrayList<>();
         allWeight = new ArrayList<>();
         allDeltaWeight = new ArrayList<>();
-        allOutput = new ArrayList<Double>();
+        allWeightUpdated = new ArrayList<>();
+        allOutput = new ArrayList<>();
         allNetFunction = new ArrayList<>();
         allErrorValue = new ArrayList<>();
-        weightInitialization = 0;
         currentNode = 0;
         maxNode = ninput-1;
         isConvergen = false;
-        treshold = 0.01;
         nepoch = 1;
         errorValue = 0;
     }
@@ -73,10 +70,6 @@ public class Perceptron {
         return ninput;
     }
     
-    public double[] getListInput(){
-        return instance;
-    }
-    
     public int getMaxnode() {
         return maxNode;
     }
@@ -84,62 +77,79 @@ public class Perceptron {
     {
         return currentNode;
     }
-    
-    public final double getWeightInitialization(){
-        return weightInitialization;
-    }
          
     public double[] getListWeight(){
         return listWeight;
     }
-    public double[] getListWeightupdated(){
-        return listWeightUpdated;
+    
+    public List<Double> getAllWeightUpdated(){
+        return allWeightUpdated;
     }
+    
     public List<Double> getAllWeight(){
         return allWeight;
     }
+    
+    public double[] getInstance(){
+        return instance;
+    }
+    
+    public List<Double> getAllInstance(){
+        return allInstance;
+    }
+    
     public double getDeltaWeight(){
         return deltaWeight;
     }
+    
     public double[] getListDeltaWeight(){
         return listDeltaWeight;
     }
+    
     public List<Double> getAllDeltaWeight(){
         return allDeltaWeight;
     }
-    public double getLearningRate(){
-        return learningRate;
-    }
+    
     public double getTarget(){
         return target;
     }
+    
     public double[] getListTarget(){
         return listTarget;
     }
+    
     public double getOutput(){
         return output;
     }
+    
     public double[] getListOutput(){
         return listOutput;
     }
+    
     public List<Double> getAllOutput(){
         return allOutput;
     }
+    
     public List<Double> getAllNetFunction(){
         return allNetFunction;
     }
+    
     public boolean getIsConvergen(){
         return isConvergen;
     }
+    
     public final double getTreshold(){
         return treshold;
     }
+    
     public int getNepoch(){
         return nepoch;
     }
+    
     public double getErrorValue(){
         return errorValue;
     }
+    
     public List<Double> getAllErrorValue(){
         return allErrorValue;
     } 
@@ -148,12 +158,11 @@ public class Perceptron {
     public void setNinput(int _ninput){
         ninput = _ninput;
     } 
-    public void setListInput(double[] _instance){
-        instance = _instance;
-    }
+   
     public void setMaxNode(int _maxNode){
         maxNode = _maxNode;
     }
+    
     public void setCurrentNode(int _currentNode){
         currentNode = _currentNode;
     }
@@ -162,12 +171,20 @@ public class Perceptron {
         listWeight = _listWeight;
     }
     
-    public void setListWeightupdated(double[] _listWeightUpdated){
-        listWeightUpdated= _listWeightUpdated;
+    public void setAllWeightUpdated(List<Double> _listWeightUpdated){
+        allWeightUpdated= _listWeightUpdated;
     }
     
     public void setAllWeight(List<Double> _allWeight){
         allWeight = _allWeight;
+    }
+    
+    public void setInstance(double[] _instance){
+        instance = _instance;
+    }
+    
+    public void setAllInstance(List<Double> _allInstance){
+        allInstance = _allInstance;
     }
     
     public void setDeltaWeight(double _deltaWeight){
@@ -180,10 +197,6 @@ public class Perceptron {
     
     public void setAllDeltaWeight(List<Double> _allDeltaWeight){
         allDeltaWeight = _allDeltaWeight;
-    }
-    
-    public void setLearningRate(double _learningRate){
-        learningRate = _learningRate;
     }
     
     public void setTarget(double _target){
@@ -227,18 +240,19 @@ public class Perceptron {
     }
     
     //FUNCTION
-     public void PerceptronLearning(double[] inputweight){
+     public void PerceptronLearning(double[] _instance, double[] _listWeight){
         input();
-        SignFunction(ComputeNetFunction(inputweight));
-        ComputeErrorPerInstance();
+        SignFunction(ComputeNetFunction());
+       // ComputeErrorPerInstance();
         ComputeErrorEpoch();
-        EpochStatus(inputweight);
+        
+        /*
         if(isConvergen){
             System.out.println("Network sudah konvergen");
         }
         else{
-            PerceptronLearning(listWeightUpdated);
-        }
+            PerceptronLearning();
+        }*/
     }
     
     public void input(){
@@ -251,21 +265,24 @@ public class Perceptron {
         currentNode = ninput + 1;
     } 
     
-    public double ComputeNetFunction(double[] _inputweight){
-        double net = 0;
+    public void addInput(double[] input){
+        for(int i=0; i<ninput; i++)
+            allInstance.add(input[i]);
+    }
+    
+    public double ComputeNetFunction(){
+        double net;
+        net = weightInitialization;
         for(int i=0; i<ninput; i++){
-            net = net + weightInitialization + listWeight[i]*_inputweight[i];
+            net = net + listWeight[i]*instance[i];
             allNetFunction.add(net);
         } 
-        netFunction = net;
         return net;
     }
     
     public void SignFunction(double netOutput){
-        double NetFunctionTreshold = 0;
-        boolean success = false;
         for(int i=0;i<ninstance;i++){
-            if (netFunction > NetFunctionTreshold){
+            if (allNetFunction.get(i) >= 0){
                 output = 1;
                 allOutput.add(output);
             }
@@ -276,75 +293,79 @@ public class Perceptron {
         }
     }
    
-    public double[] ComputeErrorPerInstance(){
-        double error[] = new double[ninstance];
-        for(int i=0;i<ninstance;i++){
-            error[i] = listTarget[i] - allOutput.get(i);
-        }
-        return error;
+    public double ComputeErrorPerInstance(int indexInstance){
+            return listTarget[indexInstance] - allOutput.get(indexInstance);
     }
     
-    public double ComputeErrorEpoch(){
+    public void ComputeErrorEpoch(){
         double Errortemp, sumErrortemp;
         sumErrortemp = 0;
         for (int i=0; i<ninstance; i++){
             {
-                Errortemp = ((1/2) * Math.pow((listTarget[i] - allOutput.get(i)), 2));
+               // System.out.println("listTarget= " + listTarget[i]);
+             //   System.out.println("allOutput= " + allOutput.get(i));
+                Errortemp = 0.5 * Math.pow((listTarget[i] - allOutput.get(i)), 2);
+             //   System.out.println("Errortemp= " + Errortemp);
                 sumErrortemp += Errortemp;
             }
         }
         errorValue = sumErrortemp;
+      //  System.out.println("errorValue = " + errorValue);
         allErrorValue.add(errorValue);
-        return errorValue;
     }
      
-    public void EpochStatus(double[] oldweight){
-        if(ComputeErrorEpoch() < treshold){
+    public void EpochStatus(int indexEpoch){
+        if(allErrorValue.get(indexEpoch) < treshold){
             isConvergen = true;
         }
         else{
             nepoch++;
-            ComputeNewWeight(ninput, oldweight, listDeltaWeight);
+            ComputeArrayofDeltaWeight(listTarget[0] ,allOutput.get(0));
+            ComputeNewWeight();
         }
     }
      
-    public double ComputeDeltaWeight(double _learningRate, double _target, double _output, double _input){
-        return (_learningRate * (_target - _output) * _input);
+    public double ComputeDeltaWeight(double _target, double _output, double _input){
+     //   System.out.println("Masuk ComputeDeltaWeight");
+        double temp = learningRate * (_target - _output) * _input;
+        if((_target - _output) == 0||_input == 0)
+            temp = 0;
+        return temp;
     }
     
-    public double[] ArrayofDeltaWeight(int _ninput, double _learningRate, double _target, double _output, double _input){
-        double[] _ArrofDelW;
-        _ArrofDelW = new double[_ninput];
-        for (int i=0; i<_ninput; i++){
-            listDeltaWeight[i] = ComputeDeltaWeight(_learningRate,_target,_output,_input);
-            allDeltaWeight.add(listDeltaWeight[i]);    
+    public void ComputeArrayofDeltaWeight(double _target, double _output){
+      //  System.out.println("masuk");
+        for (int i=0; i<ninput; i++){
+            listDeltaWeight[i] = ComputeDeltaWeight(_target,_output, instance[i]);
+            allDeltaWeight.add(listDeltaWeight[i]);
+        //    System.out.println("allDeltaWeight ["+ i + "]" + " = " + allDeltaWeight.get(i));
         }
-        return _ArrofDelW;
     }
     
-    public double[] ComputeNewWeight(int _ninput, double[] oldweight, double[] _deltaweight){
-        double[] newweight;
+    public void ComputeNewWeight(){
         for(int i=0; i<ninput; i++){
-            oldweight[i] = oldweight[i] + _deltaweight[i];
-            listWeightUpdated[i] = oldweight[i]; 
-            allWeight.add(oldweight[i]);
+         //   System.out.println("listWeight ["+ i + "]" + " = " + listWeight[i]);
+        //    System.out.println("allDeltaWeight ["+ i + "]" + " = " + allDeltaWeight.get(i));
+            listWeight[i] = listWeight[i] + allDeltaWeight.get(i);
+            allWeightUpdated.add(listWeight[i]);
         }
-        newweight = oldweight;
-        return newweight;
     }
     
     public void printPerEpoch(){
-        System.out.println("Masuk");
         for(int i=0; i<ninput; i++)
-        {
-            System.out.println("Weight ke-" + (i+1) + " = " + allWeight.get(i));
             System.out.println("Input ke-" + (i+1) + " = " + instance[i]);
-        }
+        for(int i=0; i<ninput; i++)
+            System.out.println("Weight ke-" + (i+1) + " = " + allWeight.get(i));
         for(int i=0; i<ninstance; i++){
-            System.out.println("Error instance ke-" + (i+1) + " = " + errorPerInstance[i]);
+            System.out.println("Output instance ke-" + (i+1) + " = " + allOutput.get(i));
         }
         for(int k=0; k<nepoch; k++)
             System.out.println("Error Epoch ke-" + k + " = " + allErrorValue.get(k));
+        if(nepoch > 1)
+        {    
+            for(int i=0; i<ninput; i++)
+                System.out.println("Delta Weight ke-" + (i+1) + " = " + allDeltaWeight.get(i));
+        }   
     }
 }
 
