@@ -30,6 +30,7 @@ import weka.filters.unsupervised.attribute.Remove;
 public class WekaUtil{
     private static final String pathDataSet = "dataSet/";
     private static final String pathModel = "model/";
+   // private static Instances dataSet;
     
     public static Instances loadDataARFF(String filename){
         try {
@@ -247,4 +248,5 @@ public class WekaUtil{
             System.out.println(Utils.arrayToString(dist));
         }
     }
+    
 }

@@ -8,6 +8,7 @@ package ann;
 import java.util.*;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.classifiers.Classifier;
 import weka.core.converters.ConverterUtils.DataSource;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -21,6 +22,8 @@ import org.apache.commons.csv.CSVRecord;
  * @author Mochamad Lutfi F
  */
 public class ANN {
+   // private static Classifier classifier;
+    //private Instances data;
     //CSV file header
   /*  private static final String [] FILE_HEADER_MAPPING = {"x0","x1","x2","x3","Target"};
     //dataset attribute
@@ -31,13 +34,33 @@ public class ANN {
     private static final String Target = "Target"; */
     
     public static void main(String[] args) throws IOException {
+        
+        //WekaUtil w = new WekaUtil();
+         //data = WekaUtil.getInstances()
+//WekaUtil.
+//   Perceptron unit = new Perceptron();
+       // unit.readARFF("D:\\ITB\\Semester 7\\Machine Learning\\Tugas Besar ANN\\dataset.arff");
+       // Instances i = w.loadDataARFF("dataset.arff");
         Perceptron unit = new Perceptron();
+        //System.out.println("oyyy");
+        //Enumeration instance = unit.getData().enumerateInstances();
+        unit.buildClassifier((unit.getData()));
+        //unit.buildClassifier(unit.getData());
+       /* while(instance.hasMoreElements()){
+            Instance data = (Instance) instance.nextElement();
+            System.out.println(unit.classifyInstance(data));
+        }*/
         //unit.readARFF("C:\\Program Files\\Weka-3-6\\data\\weather.numeric.arff");
         //unit.readARFF("C:\\Program Files\\Weka-3-6\\data\\weather.numeric.arff");
-        System.out.println("oy");
+        //System.out.println(unit.getData());
 //        unit.PerceptronLearning(unit.getData());
-        unit.buildClassifier(unit.getData());
+       // unit.buildClassifier(unit.getData());
     }
+    
+   // public static void buildModel(String Classifier) {
+    //    classifier = new Perceptron(data);  
+    //    classifier.buildClassifier(data);
+  //  }
         // TODO code application logic here
       /*  Perceptron unit = null;
         int currentEpoch = 0;
