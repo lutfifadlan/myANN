@@ -23,7 +23,12 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class ANN { 
     public static void main(String[] args) throws IOException {
-        Perceptron unit = new Perceptron();
-        unit.buildClassifier((unit.getData()));
+        //Perceptron unit = new Perceptron();
+        Incremental unit = new Incremental();
+        unit.buildClassifier(unit.getData());
+        
+      /*  int ninstance = unit.getData().numInstances();
+        for(int i=0; i<ninstance; i++)
+            unit.classifyInstance(unit.getData().instance(i)); */
     }
 }

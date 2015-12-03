@@ -60,7 +60,6 @@ public class Incremental {
     public final Double momentum = 0.2;
     // CONSTRUCTOR
     public Incremental() throws IOException{
-        activationFunction = 0;
         allInstanceValue = new ArrayList<>();
         listTargetInstance = new ArrayList<>();
         inputWeight = new ArrayList<>();
@@ -79,7 +78,6 @@ public class Incremental {
         loadARFF("dataset.arff");
     }
     
-     
     //GETTER
     public int getNinput(){
         return ninput;
@@ -183,6 +181,18 @@ public class Incremental {
         return classIndex;
     }
     
+    public void initializeInputWeight(int outputIndex){
+        List<Double[]> listInputWeight = new ArrayList<>();
+        for(int i=0; i<ninstance; i++){
+            Double[] _inputWeight = new Double[ninput - 1];
+            for(int j=0; j<ninput-1; j++){
+                _inputWeight[j] = newWeightFinal.get(outputIndex)[j];
+            }
+            listInputWeight.add(_inputWeight);
+        }
+        inputWeight.add(outputIndex, listInputWeight);
+    }
+    
     public void initializeDeltaWeightFinal(){
         deltaWeightFinal.clear();
         for(int i=0; i<nclass; i++){
@@ -229,7 +239,7 @@ public class Incremental {
                 listInput[j] = thisInstance.value(j);
             }
             allInstanceValue.add(listInput);
-            //System.out.println("allinstanceValue " + "[" + i + "]" + "=" + allInstanceValue.get(i)[0])
+           // System.out.println("allinstanceValue " + "[" + i + "]" + "=" + allInstanceValue.get(i)[0]);
         }
       } 
     
@@ -239,15 +249,17 @@ public class Incremental {
         for (int i=0;i<nclass;i++) {
             List<Double> listTargetClass = new ArrayList<>();
             for (int j=0;j<numInstance;j++) {
-                if (instances.instance(j).classValue() == (double) i) {
-                    listTargetClass.add(1.0);
-                } else {
-                    listTargetClass.add(0.0);
+              //  if (instances.instance(j).classValue() == (double) i) {
+                //    listTargetClass.add(1.0);
+                //} else {
+                  //  listTargetClass.add(0.0);
+                listTargetClass.add(instances.instance(j).classValue());
                 }
-            }
             listTargetInstance.add(listTargetClass);
+            }
+            
         }
-    }
+    
     
     public void initializeNewWeightFinal(){
         newWeightFinal.clear();
@@ -262,7 +274,6 @@ public class Incremental {
     
     public double ComputeOutput(Double[] _inputInstance, Double[] _inputWeight){
         double net = weightInitialization;
-        double output=0;
         //System.out.println("ninput 2 = "+ ninput);
         for(int i=0; i<ninput-1; i++)
             net = net + _inputInstance[i] * _inputWeight[i]; 
@@ -276,17 +287,16 @@ public class Incremental {
     public double ComputeErrorEpoch(List<Double> error){
         double Errortemp, sumErrortemp;
         sumErrortemp = 0;
-        for (int i=0; i<ninstance; i++){
+        for (int i=0; i<ninstance; i++)
             {
-                Errortemp = 0.5 * Math.pow((error.get(i)), 2);
+                Errortemp = /*0.5 * */ Math.pow((error.get(i)), 2);
                 sumErrortemp += Errortemp;
             }
-        }
-        return sumErrortemp; 
+        
+        return (0.5 * sumErrortemp); 
     }
      
     public Double[] ComputeDeltaWeight(Double[] _inputInstance, double _errorTarget, int numInstance, int numOutput){
-        System.out.println("ninput 3 = "+ninput);
         Double[] deltaWeight = new Double[ninput - 1];
         for(int i=0;i<ninput-1;i++){
             double prevDeltaWeight;
@@ -296,29 +306,21 @@ public class Incremental {
             else{
                 prevDeltaWeight = deltaWeightFinal.get(numOutput)[i];
             }
-            deltaWeight[i] = learningRate * _inputInstance[i] * _errorTarget + momentum * prevDeltaWeight;
+            deltaWeight[i] = learningRate * _inputInstance[i] * _errorTarget;// + momentum * prevDeltaWeight;
+           if (deltaWeight[i] == -0.0)
+                deltaWeight[i] = 0.0;
         }
+        
         return deltaWeight;
     }
 
     
     public Double[] ComputeNewWeight(Double[] _inputWeight, Double[] deltaWeight){
-        Double[] newWeight = new Double[ninput-1];
+        //Double[] newWeight = new Double[ninput-1];
         for(int i=0;i<ninput-1;i++){
-            newWeight[i] = deltaWeight[i] + _inputWeight[i];
+            _inputWeight[i] = _inputWeight[i] + deltaWeight[i];
         }
-        return newWeight;
-    }
- 
-    public void resetData(){
-        errorTarget.clear();
-        inputWeight.clear();
-        allDeltaWeight.clear();
-        allWeightUpdated.clear();
-        for(int i=0;i<nclass;i++){
-            allDeltaWeight.add(new ArrayList<>());
-            allWeightUpdated.add(new ArrayList<>());
-        }
+        return _inputWeight;
     }
     
     public void buildClassifier(Instances instances){
@@ -327,9 +329,6 @@ public class Incremental {
         InputWeight(isRandom);
         initializeDeltaWeightFinal();
         initializeNewWeightFinal();
-        //System.out.println("maxEpoch = " + maxEpoch);
-        //System.out.println("ninstance 2 = " + ninstance);
-        //System.out.println("nclass = " + nclass);
         for(int i=0;i<nclass;i++){
             allDeltaWeight.add(new ArrayList<>());
             allWeightUpdated.add(new ArrayList<> ());
@@ -338,10 +337,14 @@ public class Incremental {
             //resetData();
             for(int j=0;j<ninstance;j++){
                 for(int k=0;k<nclass;k++){
-                    System.out.println(allInstanceValue.get(j)[0] + inputWeight.get(k).get(j)[0]);
+                    initializeInputWeight(k);
+                    //System.out.println(allInstanceValue.get(j)[0] + inputWeight.get(k).get(j)[0]);
                     double tempOutput = ComputeOutput(allInstanceValue.get(j), inputWeight.get(k).get(j));
+                  //  System.out.println("listTargetInstance.get("+k+").get("+j+") = " + listTargetInstance.get(k).get(j));
                     double tempErrorTarget = ComputeErrorTarget(listTargetInstance.get(k).get(j), tempOutput);
-                    Double[] deltaWeight = ComputeDeltaWeight(allInstanceValue.get(j),tempErrorTarget,j,k);
+                    errorTarget.add(tempErrorTarget);
+                    Double [] deltaWeight = new Double[ninput-1];
+                    deltaWeight = ComputeDeltaWeight(allInstanceValue.get(j),tempErrorTarget,j,k);
                     System.out.println("delta weight 1 = " + deltaWeight[0]);
                     System.out.println("delta weight 2 = " + deltaWeight[1]);
                     System.out.println("delta weight 3= " + deltaWeight[2]);
@@ -353,18 +356,9 @@ public class Incremental {
                     newWeightFinal.set(k, newWeight);
                  } 
             }
-            for(int j=0;j<ninstance;j++){
-                List<Double> listOutput = new ArrayList<>();
-                for(int k=0;k<nclass;k++){
-                    Double outputFinal = ComputeOutput(allInstanceValue.get(j), newWeightFinal.get(k));
-                    listOutput.add(outputFinal);
-                }
-                Collections.sort(listOutput);
-                Double finalOutput = listOutput.get(nclass - 1);
-                Double finalError = ComputeErrorTarget(getClassIndex(j),finalOutput);
-                errorTarget.add(finalError);
-            }
+          
             double mse = ComputeErrorEpoch(errorTarget);
+            System.out.println("mse = " + mse);
             if(mse < treshold){
                 isConvergen = true;
                 break;
@@ -373,7 +367,7 @@ public class Incremental {
      }
 
    public double classifyInstance(Instance instance){
-       System.out.println("ninput = " + ninput);
+       //System.out.println("ninput = " + ninput);
        Double[] input = new Double[ninput - 1];
        for(int i=0; i<instance.numAttributes()-1;i++){
            input[i] = instance.value(i);
