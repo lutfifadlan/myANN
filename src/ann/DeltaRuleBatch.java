@@ -48,18 +48,76 @@ public class DeltaRuleBatch extends Classifier{
     public DeltaRuleBatch(){
         bias = 1;
         biasWeight = 0;
+        givenWeightValue = 0;
+        learningRate = 0;
+        momentum = 0;
+        maxEpoch = 100;
+        threshold = 0.3;
+        isRandomWeight = false;
         inputList = new ArrayList<>();
         inputWeightList = new ArrayList<>();
-        output = new ArrayList<>();
         target = new ArrayList<>();
+        output = new ArrayList<>();
         error = new ArrayList<>();
         deltaWeight = new ArrayList<>();
         newWeight = new ArrayList<>();
         sigmaDeltaWeight = new ArrayList<>();
-        maxEpoch = 100;
-        isConvergent = false;
-        threshold = 0.3;
-        isRandomWeight = false;
+        finalNewWeight = new ArrayList<>();
+        //isConvergent = false;
+        dataSet = null;
+    }
+    
+    public void setDataSet(Instances newDataSet){
+        dataSet = newDataSet;
+    }
+    public Instances getDataSet(){
+        return dataSet;
+    }
+    
+    public void setBias(double newBias){
+        bias = newBias;
+    }
+    public double getBias(){
+        return bias;
+    }
+    
+    public void setBiasWeight(double newBiasWeight){
+        biasWeight = newBiasWeight;
+    }
+    public double getBiasWeight(){
+        return biasWeight;
+    }
+    
+    public void setGivenWeight(double newGivenWeight){
+        givenWeightValue = newGivenWeight;
+    }
+    public double getGivenWeight(){
+        return givenWeightValue;
+    }
+    
+    public void setLearningRate(double newLearningRate){
+        learningRate = newLearningRate;
+    }
+    public double getLearningRate(){
+        return learningRate;
+    }
+    public void setMomentum(double newMomentum){
+        momentum = newMomentum;
+    }
+    public double getMomentum(){
+        return momentum;
+    }
+    public void setMaxEpoch(int newMaxEpoch){
+        maxEpoch = newMaxEpoch;
+    }
+    public int getMaxEpoch(){
+        return maxEpoch;
+    }
+    public void setThreshold(double newThreshold){
+        threshold = newThreshold;
+    }
+    public double getThreshold(){
+        return threshold;
     }
     
     @Override
@@ -152,6 +210,11 @@ public class DeltaRuleBatch extends Classifier{
     }
     
     public void resetData(){
+        output.clear();
+        error.clear();
+        inputWeightList.clear();
+        deltaWeight.clear();
+        newWeight.clear();
         
     }
     
@@ -212,6 +275,18 @@ public class DeltaRuleBatch extends Classifier{
         return indexClassMaxOutput;
     }
     
+    public void initInputWeightPerEpoch(){
+        for(int i=0;i<numClasses;i++){
+            ArrayList<Double[]> inputWeightPerClass = new ArrayList<>();
+            for(int j=0;j<numInstances;j++){
+                Double[] inputWeightPerInstance = new Double[numAttributes];
+                System.arraycopy(finalNewWeight.get(i), 0, inputWeightPerInstance, 0, numAttributes);
+                inputWeightPerClass.add(inputWeightPerInstance);
+            }
+            inputWeightList.add(inputWeightPerClass);
+        }
+    }
+    
     @Override
     public void buildClassifier(Instances instances) throws Exception {
         initDataSet(instances);
@@ -221,6 +296,8 @@ public class DeltaRuleBatch extends Classifier{
         
         for(int i=0;i<maxEpoch;i++){
             resetData();
+            initInputWeightPerEpoch();
+            
             //proses penghitungan output, error, deltaWeight tiap instances
             for(int j=0;j<numClasses;j++){
                 for(int k=0; k<numInstances;k++){
@@ -266,7 +343,7 @@ public class DeltaRuleBatch extends Classifier{
             mseValue *= 0.5;
             //System.out.println("Error epoch " + (i+1) + " : " + mseValue);
             if (mseValue<threshold) {
-                isConvergent = true;
+                //isConvergent = true;
                 break;
             }
         }
@@ -288,7 +365,5 @@ public class DeltaRuleBatch extends Classifier{
             outputPerNeuron.add(outputThisNeuron);
         }
         return getIndexClassHighestOutput(outputPerNeuron);
-    }
-    
-    
+    }    
 }

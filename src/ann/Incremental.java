@@ -25,8 +25,6 @@ import weka.classifiers.Classifier;
 import weka.core.Capabilities;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.filters.Filter;
-import weka.filters.supervised.attribute.NominalToBinary;
 
 /**
  *
@@ -313,6 +311,19 @@ public class Incremental extends Classifier {
         return _inputWeight;
     }
     
+    @Override
+    public Capabilities getCapabilities() {
+        Capabilities result = super.getCapabilities();
+        result.disableAll();
+        result.enable(Capabilities.Capability.NOMINAL_ATTRIBUTES);
+        result.enable(Capabilities.Capability.NUMERIC_ATTRIBUTES);
+        result.enable(Capabilities.Capability.MISSING_VALUES);
+        result.enable(Capabilities.Capability.NOMINAL_CLASS);
+        result.enable(Capabilities.Capability.MISSING_CLASS_VALUES);
+        return result;
+    }
+    
+    @Override
     public void buildClassifier(Instances _instances){
         Instances instances;
         instances = WekaUtil.nominalToBinaryFilter(_instances);
