@@ -5,18 +5,7 @@
  */
 
 package ann;
-import java.util.*;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.classifiers.Classifier;
-import weka.core.converters.ConverterUtils.DataSource;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import weka.classifiers.Evaluation;
 /**
  *
