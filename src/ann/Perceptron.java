@@ -22,51 +22,30 @@ import weka.filters.supervised.attribute.NominalToBinary;
  *
  * @author Mochamad Lutfi F
  */
-public class Perceptron {
+public class Perceptron extends Classifier{
     private int ninput; //jumlah input
     private int ninstance; //jumlah instance
     private int nclass; //jumlah kelas
-    private double[] instance; //array nilai input
     private Instances data;
     private List<Double[]> allInstanceValue;
-   // private int[] numinput; //penomoran input
-    //private int maxNode; //nomor node paling besar
-   // private int currentNode; //nomer node saat ini 
-   // private double[] listWeight;
-    //private double[] listWeightUpdated;
     private List<List<Double[]>> allWeightUpdated;
     private List<List<Double[]>> inputWeight;
-    //private double deltaWeight;
-    //private double[] listDeltaWeight;
     private List<List<Double[]>> allDeltaWeight;
     private List<Double[]> deltaWeightFinal;
     private List<Double[]> newWeightFinal;
     private List<List<Double>> listTargetInstance;
-  //  private double target;
-   // private double[] listTarget;
-   // private double output;
-   // private List<Double> listOutput;
-   // private List<Double[]> allOutput;
-    private List<List<Double>> allNetFunction;
-    private Random random;
-    private boolean isConvergen;
-    private int nepoch;
-    private double[] errorPerInstance; //target-output
-    private double errorValue;
     private List<Double> errorTarget;
-    private List<Double> listErrorValue;
     private List<List<Double>> allErrorValue; 
+    private boolean isConvergen;
     private boolean isRandom;
     private int maxEpoch;
     private int activationFunction; // 0 = sign, 1 = sigmoid
-    public final double weightInitialization = 0;
+    public final Double weightInitialization = 0.0;
     public final Double treshold = 0.01;
     public final Double learningRate = 0.1;
     public final Double momentum = 0.2;
     // CONSTRUCTOR
     public Perceptron() throws IOException{
-        
-      //  listOutput = new ArrayList<>();
         activationFunction = 0;
         allInstanceValue = new ArrayList<>();
         listTargetInstance = new ArrayList<>();
@@ -75,49 +54,15 @@ public class Perceptron {
         deltaWeightFinal = new ArrayList<>();
         newWeightFinal = new ArrayList<>();
         allWeightUpdated = new ArrayList<>();
-    //    allOutput = new ArrayList<>();
-        allNetFunction = new ArrayList<>();
-        listErrorValue = new ArrayList<>();
         allErrorValue = new ArrayList<>();
-      //  currentNode = 0;
-       // maxNode = ninput-1;
         isConvergen = false;
-        //nepoch = 1;
         errorTarget = new ArrayList<>();
-        errorValue = 0;
         isRandom = false;
         nclass = 1;
         maxEpoch = 10;
-        loadARFF("dataset.arff");
-        //InputInstance();
-       // readARFF("D:\\ITB\\Semester 7\\Machine Learning\\Tugas Besar ANN\\dataset.arff");
-       // buildClassifier(data);
+        loadARFF("iris.arff");
     }
     
-    /*(public Perceptron(int _ninput, int _ninstance){
-        ninstance = _ninstance;
-        ninput = _ninput;
-        instance = new double[ninput];
-        listWeight = new double[ninput];
-        listDeltaWeight = new double[ninput];
-        listTarget = new double[ninstance];
-        errorPerInstance = new double [ninstance];
-        listOutput = new ArrayList<>();
-        allInstanceValue = new ArrayList<>();
-        inputWeight = new ArrayList<>();
-        allDeltaWeight = new ArrayList<>();
-        allWeightUpdated = new ArrayList<>();
-        allOutput = new ArrayList<>();
-        allNetFunction = new ArrayList<>();
-        listErrorValue = new ArrayList<>();
-        allErrorValue = new ArrayList<>();
-        currentNode = 0;
-        maxNode = ninput-1;
-        isConvergen = false;
-        nepoch = 1;
-        errorValue = 0;
-    }*/
-     
     //GETTER
     public int getNinput(){
         return ninput;
@@ -131,22 +76,6 @@ public class Perceptron {
         return data;
     }
     
-    public double[] getInstance(){
-        return instance;
-    } 
-    
-    //public int getMaxnode() {
-    //    return maxNode;
-    //}
-  //  public int getCurrentnode() //nomer node saat ini
-   // {
-    //    return currentNode;
-    //}
-         
-   // public double[] getListWeight(){
-    //    return listWeight;
-    //}
-    
     public List<List<Double[]>> getAllWeightUpdated(){
         return allWeightUpdated;
     }
@@ -159,40 +88,12 @@ public class Perceptron {
         return allInstanceValue;
     }
     
-    //public double getDeltaWeight(){
-     //   return deltaWeight;
-    //}
-    
-    //public double[] getListDeltaWeight(){
-     //   return listDeltaWeight;
-    //}
-    
     public List<List<Double[]>> getAllDeltaWeight(){
         return allDeltaWeight;
     }
     
     public List<List<Double>> getListTarget(){
         return listTargetInstance;
-    }
-    
-    //public double[] getListTarget(){
-     //   return listTarget;
-    //}
-    
-    //public double getOutput(){
-     //   return output;
-    //}
-    
-  /*  public List<Double> getListOutput(){
-        return listOutput;
-    }
-    
-    public List<Double[]> getAllOutput(){
-        return allOutput;
-    }*/
-    
-    public List<List<Double>> getAllNetFunction(){
-        return allNetFunction;
     }
     
     public boolean getIsConvergen(){
@@ -202,15 +103,7 @@ public class Perceptron {
     public final double getTreshold(){
         return treshold;
     }
-    
-    public int getNepoch(){
-        return nepoch;
-    }
-    
-    public double getErrorValue(){
-        return errorValue;
-    }
-    
+
     public List<List<Double>> getAllErrorValue(){
         return allErrorValue;
     } 
@@ -219,18 +112,6 @@ public class Perceptron {
     public void setNinput(int _ninput){
         ninput = _ninput;
     } 
-   /*
-    public void setMaxNode(int _maxNode){
-        maxNode = _maxNode;
-    }
-    
-    public void setCurrentNode(int _currentNode){
-        currentNode = _currentNode;
-    }
-    
-    public void setListWeight(double[] _listWeight){
-        listWeight = _listWeight;
-    }*/
     
     public void setAllWeightUpdated(List<List<Double[]>> _listWeightUpdated){
         allWeightUpdated= _listWeightUpdated;
@@ -239,84 +120,28 @@ public class Perceptron {
     public void setAllWeight(List<List<Double[]>> _allWeight){
         inputWeight = _allWeight;
     }
-    
-    public void setInstance(double[] _instance){
-        instance = _instance;
-    }
-    
+   
     public void setAllInstanceValue(List<Double[]> _allInstance){
         allInstanceValue = _allInstance;
     }
-    
-  /*  public void setDeltaWeight(double _deltaWeight){
-        deltaWeight = _deltaWeight;
-    }
-    
-    public void setListDeltaWeight(double[] _listDeltaWeight){
-        listDeltaWeight = _listDeltaWeight;
-    } */
     
     public void setAllDeltaWeight(List<List<Double[]>> _allDeltaWeight){
         allDeltaWeight = _allDeltaWeight;
     }
     
-   /* public void setTarget(double _target){
-        target = _target;
-    } */
-    
     public void setTargetInstance(List<List<Double>> _listTarget){
         listTargetInstance = _listTarget;
     }
-    
-   /* public void setOutput(double _output){
-        output = _output;
-    } */
-    
-   /* public void setListOutput(List<Double> _listOutput){
-        listOutput = _listOutput;
-    }
-    
-    public void setAllOutput(List<Double[]> _allOutput){
-        allOutput = _allOutput;
-    }*/
-    
-    public void setAllNetFunction(List<List<Double>> _allNetFunction){
-        allNetFunction = _allNetFunction;
-    }
-    
+
     public void setIsConvergen(boolean _isConvergen){
         isConvergen = _isConvergen;
     }
-   
-    public void setNepoch(int _nepoch){
-        nepoch  = _nepoch;
-    }
-    
-    public void setErrorValue(double _errorValue){
-        errorValue = _errorValue;
-    }
-    
+
     public void setAllErrorValue(List<List<Double>> _allErrorValue){
         allErrorValue = _allErrorValue;
     }
     
     //FUNCTION
-    
-          
-        /*
-        if(isConvergen){
-            System.out.println("Network sudah konvergen");
-        }
-        else{
-            PerceptronLearning();
-        }*/
-    
-    public void setNominalToBinary() throws Exception{
-        NominalToBinary NTB = new NominalToBinary();
-        NTB.setInputFormat(data);
-        data = new Instances(Filter.useFilter(data, NTB));
-    }
-    
     public Double getClassIndex(int indexInstance){
         Double classIndex = 0.0;
         for(int i=0; i<nclass; i++){
@@ -327,6 +152,17 @@ public class Perceptron {
         return classIndex;
     }
     
+    public int highestOutputIndex(List<Double> output){
+        int index = 0;
+        Double maxOut = output.get(0);
+        for(int i=1;i<output.size();i++){
+            if(output.get(i) > maxOut){
+                index = i;
+                maxOut = output.get(i);
+            }
+        }
+        return index;
+    }
     
     public void initializeDeltaWeightFinal(){
         deltaWeightFinal.clear();
@@ -371,16 +207,10 @@ public class Perceptron {
             Instance thisInstance = instances.instance(i);
             Double[] listInput = new Double[ninput];
             for(int j=0; j<ninput; j++){
-                System.out.println("thisInstance.value " + "[" + j + "]" + "=" + thisInstance.value(j));
                 listInput[j] = thisInstance.value(j);
             }
-            allInstanceValue.add(listInput);
-            System.out.println("allinstanceValue " + "[" + i + "]" + "=" + allInstanceValue.get(i)[0]);
-            //inputWeight.add(listWeight[i]);
-            //allInstance.add(instance[i]);
-            
+            allInstanceValue.add(listInput);           
         }
-       // currentNode = ninput + 1;
     } 
     
     public void InputTargetInstances(Instances instances) {
@@ -399,6 +229,18 @@ public class Perceptron {
         }
     }
     
+    public void initializeInputWeight(int outputIndex){
+        List<Double[]> listInputWeight = new ArrayList<>();
+        for(int i=0; i<ninstance; i++){
+            Double[] _inputWeight = new Double[ninput - 1];
+            for(int j=0; j<ninput-1; j++){
+                _inputWeight[j] = newWeightFinal.get(outputIndex)[j];
+            }
+            listInputWeight.add(_inputWeight);
+        }
+        inputWeight.add(outputIndex, listInputWeight);
+    }
+    
     public void initializeNewWeightFinal(){
         newWeightFinal.clear();
         for(int i=0; i<nclass;i++){
@@ -413,12 +255,8 @@ public class Perceptron {
     public double ComputeOutput(Double[] _inputInstance, Double[] _inputWeight){
         double net = weightInitialization;
         double output=0;
-        System.out.println("ninput 2 = "+ ninput);
-        //List<Double> net = new ArrayList<>();
-        //net.add(weightInitialization);
         for(int i=0; i<ninput-1; i++){
-            net = net + _inputInstance[i] * _inputWeight[i];
-            //allNetFunction.add(net);
+            net = net + (_inputInstance[i] * _inputWeight[i]);
         } 
         if(activationFunction == 0){
             if(net > 0){
@@ -436,55 +274,18 @@ public class Perceptron {
         return (targetOutput-output);
     }
     
-  /*  public void SignFunction(double netOutput){
-        //for(int i=0;i<ninstance;i++){
-            //if (allNetFunction.get(i) >= 0){
-            if(netOutput >= 0){
-                output = 1;
-                listOutput.add(output);
-            }
-            else{
-                output = -1;       
-                listOutput.add(output);
-            }            
-    }*/
-   
-    /*public double ComputeErrorPerInstance(int indexInstance){
-            return listTarget[indexInstance] - allOutput.get(indexInstance);
-    }*/
-    
     public double ComputeErrorEpoch(List<Double> error){
         double Errortemp, sumErrortemp;
         sumErrortemp = 0;
         for (int i=0; i<ninstance; i++){
-            {
-               // System.out.println("listTarget= " + listTarget[i]);
-             //   System.out.println("allOutput= " + allOutput.get(i));
-                Errortemp = 0.5 * Math.pow((error.get(i)), 2);
-             //   System.out.println("Errortemp= " + Errortemp);
+                Errortemp = Math.pow((error.get(i)), 2);
                 sumErrortemp += Errortemp;
-            }
         }
-        errorValue = sumErrortemp;
-        return errorValue;
-        //listErrorValue.add(errorValue);
-      //  System.out.println("errorValue = " + errorValue);
-        
+        return (0.5 * sumErrortemp);
     }
      
-   /* public void EpochStatus(int indexEpoch){
-        if(listErrorValue.get(indexEpoch) < treshold){
-            isConvergen = true;
-        }
-        else{
-            nepoch++;
-            ComputeArrayofDeltaWeight(listTarget[0] ,listOutput.get(0));
-            ComputeNewWeight(indexEpoch, 1);
-        }
-    }*/
-     
     public Double[] ComputeDeltaWeight(Double[] _inputInstance, double _errorTarget, int numInstance, int numOutput){
-        System.out.println("ninput 3 = "+ninput);
+       // System.out.println("ninput 3 = "+ninput);
         Double[] deltaWeight = new Double[ninput - 1];
         for(int i=0;i<ninput-1;i++){
             double prevDeltaWeight;
@@ -495,32 +296,13 @@ public class Perceptron {
                 prevDeltaWeight = deltaWeightFinal.get(numOutput)[i];
             }
             deltaWeight[i] = learningRate * _inputInstance[i] * _errorTarget + momentum * prevDeltaWeight;
+            if (deltaWeight[i] == -0.0)
+                deltaWeight[i] = 0.0;
         }
         return deltaWeight;
-       /* double temp = learningRate * (_target - _output) * _input;
-        if((_target - _output) == 0||_input == 0)
-            temp = 0;
-        return temp;*/
     }
     
-   /* public double[] ComputeArrayofDeltaWeight(double _target, double _output){
-      //  System.out.println("masuk");
-        for (int i=0; i<ninput; i++){
-            listDeltaWeight[i] = ComputeDeltaWeight(_target,_output, instance[i]);
-   
-        //    System.out.println("allDeltaWeight ["+ i + "]" + " = " + allDeltaWeight.get(i));
-        }
-       // allDeltaWeight.add(listDeltaWeight);
-        return listDeltaWeight;
-    }*/
-    
     public Double[] ComputeNewWeight(Double[] _inputWeight, Double[] deltaWeight){
-       // for(int i=0; i<ninput; i++){
-         //   System.out.println("listWeight ["+ i + "]" + " = " + listWeight[i]);
-        //    System.out.println("allDeltaWeight ["+ i + "]" + " = " + allDeltaWeight.get(i));
-       //     inputWeight.get(CurrentEpoch).get(numInstance)[i] = inputWeight.get(CurrentEpoch).get(numInstance)[i] + listDeltaWeight[i];  
-        //}
-        //allWeightUpdated.add(inputWeight.get(CurrentEpoch));
         Double[] newWeight = new Double[ninput-1];
         for(int i=0;i<ninput-1;i++){
             newWeight[i] = deltaWeight[i] + _inputWeight[i];
@@ -528,70 +310,31 @@ public class Perceptron {
         return newWeight;
     }
     
-    public void printPerEpoch(){
-        for(int i=0; i<ninput; i++)
-            System.out.println("Input ke-" + (i+1) + " = " + instance[i]);
-        for(int i=0; i<ninput; i++)
-            System.out.println("Weight ke-" + (i+1) + " = " + inputWeight.get(i));
-    /*    for(int i=0; i<ninstance; i++){
-            System.out.println("Output instance ke-" + (i+1) + " = " + allOutput.get(i));
-        }*/
-        for(int k=0; k<nepoch; k++)
-            System.out.println("Error Epoch ke-" + k + " = " + allErrorValue.get(k));
-        if(nepoch > 1)
-        {    
-            for(int i=0; i<ninput; i++)
-                System.out.println("Delta Weight ke-" + (i+1) + " = " + allDeltaWeight.get(i));
-        }   
-    }
-    
-    public void resetData(){
-        errorTarget.clear();
-        inputWeight.clear();
-        allDeltaWeight.clear();
-        allWeightUpdated.clear();
-        //System.out.println(nclass);
-        for(int i=0;i<nclass;i++){
-            allDeltaWeight.add(new ArrayList<>());
-            allWeightUpdated.add(new ArrayList<>());
-        }
-    }
-    
-    public void buildClassifier(Instances instances){
-        //readARFF("C:\\Program Files\\Weka-3-6\\data\\weather.numeric.arff");
+    public void buildClassifier(Instances _instances){
+        Instances instances;
+        instances = WekaUtil.nominalToBinaryFilter(_instances);
+        instances = WekaUtil.normalizationFilter(_instances);
         InputInstance(instances);
         InputTargetInstances(instances);
         InputWeight(isRandom);
         initializeDeltaWeightFinal();
         initializeNewWeightFinal();
-        // SignFunction(ComputeNetFunction());
-        // ComputeErrorPerInstance();
-        //ComputeErrorEpoch();
-        //System.out.println(allInstanceValue.get(0)[0] + inputWeight.get(0).get(0)[0]);
-       // //allInstanceValuenya punyanya data, gimana bisa dapetin dari instances ?
-        //System.out.println("allInstanceValue")
-        System.out.println("maxEpoch = " + maxEpoch);
-        System.out.println("ninstance 2 = " + ninstance);
-        System.out.println("nclass = " + nclass);
-        for(int i=0;i<nclass;i++){
-            allDeltaWeight.add(new ArrayList<>());
-            allWeightUpdated.add(new ArrayList<> ());
-        }
         for(int i=0;i<maxEpoch;i++){
-            //resetData();
+            errorTarget.clear();
+            inputWeight.clear();
+            allDeltaWeight.clear();
+            allWeightUpdated.clear();
+            for(int idx=0;idx<nclass;idx++){
+                allDeltaWeight.add(new ArrayList<>());
+                allWeightUpdated.add(new ArrayList<> ());
+            }
             for(int j=0;j<ninstance;j++){
                 for(int k=0;k<nclass;k++){
-                    System.out.println(allInstanceValue.get(j)[0] + inputWeight.get(k).get(j)[0]);
+                    initializeInputWeight(k);
+                    //System.out.println(allInstanceValue.get(j)[0] + inputWeight.get(k).get(j)[0]);
                     double tempOutput = ComputeOutput(allInstanceValue.get(j), inputWeight.get(k).get(j));
                     double tempErrorTarget = ComputeErrorTarget(listTargetInstance.get(k).get(j), tempOutput);
                     Double[] deltaWeight = ComputeDeltaWeight(allInstanceValue.get(j),tempErrorTarget,j,k);
-                    System.out.println("delta weight 1 = " + deltaWeight[0]);
-                    System.out.println("delta weight 2 = " + deltaWeight[1]);
-                    System.out.println("delta weight 3= " + deltaWeight[2]);
-                    System.out.println("delta weight 4= " + deltaWeight[3]);
-                    //System.out.println("delta weight = " + deltaWeight[4]);
-              //      System.out.println("allDeltaWeight = " + allDeltaWeight.get(0).get(0)[0]);
-                   // allDeltaWeight.get(k).add(j,deltaWeight);
                     allDeltaWeight.get(k).add(j, deltaWeight);
                     deltaWeightFinal.set(k, deltaWeight);
                     Double[] newWeight = ComputeNewWeight(inputWeight.get(k).get(j), deltaWeight);
@@ -605,9 +348,10 @@ public class Perceptron {
                     Double outputFinal = ComputeOutput(allInstanceValue.get(j), newWeightFinal.get(k));
                     listOutput.add(outputFinal);
                 }
+                int hoi = highestOutputIndex(listOutput);
                 Collections.sort(listOutput);
                 Double finalOutput = listOutput.get(nclass - 1);
-                Double finalError = ComputeErrorTarget(getClassIndex(j),finalOutput);
+                Double finalError = ComputeErrorTarget(listTargetInstance.get(hoi).get(j),finalOutput);
                 errorTarget.add(finalError);
             }
             double mse = ComputeErrorEpoch(errorTarget);
