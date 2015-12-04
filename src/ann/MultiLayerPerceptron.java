@@ -439,7 +439,7 @@ public class MultiLayerPerceptron extends Classifier{
         }
     }
     
-    public void printNeuron() {
+    /*public void printNeuron() {
         System.out.println("Neuron - Input Value (Activation) - Target - Net Value - Error");
         for (Map.Entry<Integer, Neuron> neuron : neurons.entrySet()) {
             System.out.print(neuron.getKey() + " ");
@@ -461,7 +461,7 @@ public class MultiLayerPerceptron extends Classifier{
                 System.out.println(realWeight.getValue()[2] + " ");
             }
         }
-    }
+    }*/
     
     public double sigmoid(double value){
         double exp = 1 + Math.exp(-value);

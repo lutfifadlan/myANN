@@ -63,7 +63,7 @@ public class DeltaRuleBatch extends Classifier{
         newWeight = new ArrayList<>();
         sigmaDeltaWeight = new ArrayList<>();
         finalNewWeight = new ArrayList<>();
-        //isConvergent = false;
+        isConvergent = false;
         dataSet = null;
     }
     
@@ -349,7 +349,9 @@ public class DeltaRuleBatch extends Classifier{
         initFinalNewWeight();
         initSigmaDeltaWeight();
         
-        for(int i=0;i<maxEpoch;i++){
+        int i = 0;
+        do{
+        //for(int i=0;i<maxEpoch;i++){
             resetData();
             initInputWeightPerEpoch();
             
@@ -399,15 +401,16 @@ public class DeltaRuleBatch extends Classifier{
             mseValue *= 0.5;
             System.out.println("Error epoch " + (i+1) + " : " + mseValue);
             if (mseValue<threshold) {
-                //isConvergent = true;
-                break;
+                isConvergent = true;
+                //break;
             }
-        }
+            i++;
+        }while((i<maxEpoch) && !isConvergent);
     }
     
     @Override
     public double classifyInstance(Instance instance){
-        Double[] inputValue = new Double[numAttributes-1];
+        Double[] inputValue = new Double[instance.numAttributes()-1];
         for (int i=0;i<instance.numAttributes()-1;i++) {
             inputValue[i] = instance.value(i);
         }
@@ -415,7 +418,7 @@ public class DeltaRuleBatch extends Classifier{
         ArrayList<Double> outputPerNeuron = new ArrayList<>();
         for (Double[] weightValue : finalNewWeight) {
             double outputThisNeuron = 0;
-            for(int x=0;x<numAttributes-1;x++) {
+            for(int x=0;x<instance.numAttributes()-1;x++) {
                 outputThisNeuron += inputValue[x] * weightValue[x];
                 System.out.println(outputThisNeuron);
             }

@@ -29,7 +29,7 @@ public class Main {
         ANNOptions.threshold = 0.34;
         
         Classifier classifier;
-        Instances dataSet; 
+        Instances dataSet;
         String filename = "weather.nominal.arff";
         String filenameUnlabeled = "weather.unlabeled.nominal.arff";
         dataSet= WekaUtil.loadDataARFF(filename);
