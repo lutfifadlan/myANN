@@ -39,13 +39,12 @@ public class Main {
         
         //classifier = new MultiLayerPerceptron(dataSet);
         classifier = new DeltaRuleBatch();
-        //classifier = new Delta(dataSet);
         
         classifier.buildClassifier(dataSet);
         WekaUtil.saveModel(filename, classifier);
         //WekaUtil.percentageSplit(dataSet, classifier, 50);
-        //WekaUtil.crossValidation(dataSet, classifier);
-        classifier = WekaUtil.loadModel(filename);
-        WekaUtil.classify(filenameUnlabeled, classifier);
+        WekaUtil.crossValidation(dataSet, classifier);
+        //classifier = WekaUtil.loadModel(filename);
+        //WekaUtil.classify(filenameUnlabeled, classifier);
     }
 }

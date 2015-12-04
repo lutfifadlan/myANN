@@ -165,12 +165,12 @@ public class DeltaRuleBatch extends Classifier{
         Double[] input;
         for(int i=0;i<numInstances;i++){
             input = new Double[numAttributes];
-            for(int j=0;j<numAttributes-1;j++){
-                //if(j==0){//bias
-                //    input[j] = 0.0;
-                //}else{
+            for(int j=0;j<numAttributes;j++){
+                if(j==0){//bias
+                    input[j] = 0.0;
+                }else{
                     input[j] = dataSet.instance(i).value(j);
-                //}
+                }
             }
             inputList.add(input);
         }
@@ -184,14 +184,14 @@ public class DeltaRuleBatch extends Classifier{
             for(int i=0;i<numClasses;i++){
                 inputWeightPerClass = new ArrayList<>();
                 for(int j=0;j<numInstances;j++){
-                    inputWeight = new Double[numAttributes-1];
-                    for(int k=0;k<numAttributes-1;k++){
-                        //if(j==0){//biasWeight;
-                        //    inputWeight[k] = biasWeight;
-                        //}else{
+                    inputWeight = new Double[numAttributes];
+                    for(int k=0;k<numAttributes;k++){
+                        if(j==0){//biasWeight;
+                            inputWeight[k] = biasWeight;
+                        }else{
                             randomValue = new Random();
                             inputWeight[k] = randomValue.nextDouble() - 0.05;
-                        //}
+                        }
                     }
                     inputWeightPerClass.add(inputWeight);
                 }
@@ -202,13 +202,13 @@ public class DeltaRuleBatch extends Classifier{
             for(int i=0;i<numClasses;i++){
                 inputWeightPerClass = new ArrayList<>();
                 for(int j=0;j<numInstances;j++){
-                    inputWeight = new Double[numAttributes-1];
-                    for(int k=0;k<numAttributes-1;k++){
-                        //if(j==0){//biasWeight;
-                        //inputWeight[k] = biasWeight;
-                        //}else{
+                    inputWeight = new Double[numAttributes];
+                    for(int k=0;k<numAttributes;k++){
+                        if(j==0){//biasWeight;
+                        inputWeight[k] = biasWeight;
+                        }else{
                         inputWeight[k] = givenWeightValue;
-                        //}
+                        }
                     }
                     inputWeightPerClass.add(inputWeight);
                 }
@@ -246,8 +246,8 @@ public class DeltaRuleBatch extends Classifier{
     
     public Double[] calculateDeltaWeight(Double[] inputValue, Double errorValue, 
             int neuronOutputIndex, int instanceIndex){
-        Double[] deltaWeightThisInstance = new Double[numAttributes-1];
-        for (int k=0;k<numAttributes-1;k++) {
+        Double[] deltaWeightThisInstance = new Double[numAttributes];
+        for (int k=0;k<numAttributes;k++) {
             double previousDeltaWeightThisAttribute;
             if (instanceIndex > 0) {
                 previousDeltaWeightThisAttribute = deltaWeight.get(neuronOutputIndex).get(instanceIndex-1)[k];
@@ -261,8 +261,8 @@ public class DeltaRuleBatch extends Classifier{
     }
     
     public Double[] calculateNewWeight(Double[] inputWeight, Double[] deltaWeight){
-        Double[] newWeightThisInstance = new Double[numAttributes-1];
-        for (int k=0;k<numAttributes-1;k++) {
+        Double[] newWeightThisInstance = new Double[numAttributes];
+        for (int k=0;k<numAttributes;k++) {
             newWeightThisInstance[k] = inputWeight[k] + deltaWeight[k];
         }
         return newWeightThisInstance;
@@ -274,8 +274,8 @@ public class DeltaRuleBatch extends Classifier{
         Double[] finalNewWeightPerClass;
         
         for(int i=0;i<numClasses;i++){
-            sigmaDeltaWeightPerClass = new Double[numAttributes-1];
-            for(int j=0;j<numAttributes-1;j++){
+            sigmaDeltaWeightPerClass = new Double[numAttributes];
+            for(int j=0;j<numAttributes;j++){
                 sigmaDeltaWeightPerAttribute = 0.0;
                 for(int k=0;k<numInstances;k++){
                     sigmaDeltaWeightPerAttribute += deltaWeight.get(i).get(k)[j];
@@ -283,7 +283,6 @@ public class DeltaRuleBatch extends Classifier{
                 sigmaDeltaWeightPerClass[j] = sigmaDeltaWeightPerAttribute;
             }
             sigmaDeltaWeight.set(i,sigmaDeltaWeightPerClass);
-            //finalNewWeightPerClass = new Double[numAttributes];
             finalNewWeightPerClass = calculateNewWeight(inputWeightList.get(i).get(numInstances-1), sigmaDeltaWeightPerClass);
             finalNewWeight.set(i, finalNewWeightPerClass);
         }
@@ -305,8 +304,8 @@ public class DeltaRuleBatch extends Classifier{
         for(int i=0;i<numClasses;i++){
             ArrayList<Double[]> inputWeightPerClass = new ArrayList<>();
             for(int j=0;j<numInstances;j++){
-                Double[] inputWeightPerInstance = new Double[numAttributes-1];
-                System.arraycopy(finalNewWeight.get(i), 0, inputWeightPerInstance, 0, numAttributes-1);
+                Double[] inputWeightPerInstance = new Double[numAttributes];
+                System.arraycopy(finalNewWeight.get(i), 0, inputWeightPerInstance, 0, numAttributes);
                 inputWeightPerClass.add(inputWeightPerInstance);
             }
             inputWeightList.add(i,inputWeightPerClass);
@@ -317,8 +316,8 @@ public class DeltaRuleBatch extends Classifier{
         finalNewWeight.clear();
         Double[] finalNewWeightPerClass;
         for (int i=0;i<numClasses;i++) {
-            finalNewWeightPerClass = new Double[numAttributes-1];
-            for (int j=0;j<numAttributes-1;j++) {
+            finalNewWeightPerClass = new Double[numAttributes];
+            for (int j=0;j<numAttributes;j++) {
                 finalNewWeightPerClass[j] = 0.0;
             }
             finalNewWeight.add(i, finalNewWeightPerClass);
@@ -329,8 +328,8 @@ public class DeltaRuleBatch extends Classifier{
         sigmaDeltaWeight.clear();
         Double[] sigmaDeltaWeightPerClass;
         for (int i=0;i<numClasses;i++) {
-            sigmaDeltaWeightPerClass = new Double[numAttributes-1];
-            for (int j=0; j<numAttributes-1; j++) {
+            sigmaDeltaWeightPerClass = new Double[numAttributes];
+            for (int j=0; j<numAttributes; j++) {
                 sigmaDeltaWeightPerClass[j] = 0.0;
             }
             sigmaDeltaWeight.add(i, sigmaDeltaWeightPerClass);
@@ -360,7 +359,7 @@ public class DeltaRuleBatch extends Classifier{
                 for(int k=0; k<numInstances;k++){
                     //hitung output
                     double outputPerInstance = 0;
-                    for(int x=0;x<numAttributes-1;x++) {
+                    for(int x=0;x<numAttributes;x++) {
                         outputPerInstance += inputList.get(k)[x] * inputWeightList.get(j).get(k)[x];
                     }
                     //output.add(outputPerInstance);
@@ -381,7 +380,7 @@ public class DeltaRuleBatch extends Classifier{
                 output = new ArrayList<>();
                 for (int k=0;k<numClasses;k++) {
                     double outputFinalThisClass = 0;//computeOutputInstance(inputValue.get(j),finalNewWeight.get(k));
-                    for(int x=0;x<numAttributes-1;x++) {
+                    for(int x=0;x<numAttributes;x++) {
                         outputFinalThisClass += inputList.get(j)[x] * finalNewWeight.get(k)[x];
                     }
                     output.add(outputFinalThisClass);
@@ -394,13 +393,13 @@ public class DeltaRuleBatch extends Classifier{
                 //System.out.println(errorThisInstance);
             }
             // Hitung MSE Epoch
-            double mseValue = 0.0;
-            for (int j=0;j<numAttributes;j++) {
-                mseValue += Math.pow(error.get(j), 2);
+            errorEpoch = 0.0;
+            for (int j=0;j<numInstances;j++) {
+                errorEpoch += Math.pow(error.get(j), 2);
             }
-            mseValue *= 0.5;
-            System.out.println("Error epoch " + (i+1) + " : " + mseValue);
-            if (mseValue<threshold) {
+            errorEpoch *= 0.5;
+            System.out.println("Error epoch " + (i+1) + " : " + errorEpoch);
+            if (errorEpoch<threshold) {
                 isConvergent = true;
                 //break;
             }
